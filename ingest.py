@@ -83,15 +83,18 @@ LOADER_MAPPING = {
     # Add more mappings for other file extensions and loaders as needed
 }
 
-
 def load_single_document(file_path: str) -> List[Document]:
-    ext = "." + file_path.rsplit(".", 1)[-1].lower()
-    if ext in LOADER_MAPPING:
-        loader_class, loader_args = LOADER_MAPPING[ext]
-        loader = loader_class(file_path, **loader_args)
-        return loader.load()
+    try:
+        ext = "." + file_path.rsplit(".", 1)[-1]
+        if ext in LOADER_MAPPING:
+            loader_class, loader_args = LOADER_MAPPING[ext]
+            loader = loader_class(file_path, **loader_args)
+            return loader.load()
 
-    raise ValueError(f"Unsupported file extension '{ext}'")
+        raise ValueError(f"Unsupported file extension '{ext}'")
+    except Exception as e:
+        print(f"Failed to load {file_path} due to {e}")
+        return []
 
 def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Document]:
     """
